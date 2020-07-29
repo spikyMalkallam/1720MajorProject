@@ -1,4 +1,4 @@
-image: comp1720/comp1720-2019-gitlab-ci:0.4.0
+image: comp17202020/comp1720-2020-gitlab-ci:0.5.0
 
 variables:
   DEST_DIR: /srv/gitlab-ce-pages/staging/$CI_JOB_ID/$CI_COMMIT_REF_NAME/$CI_PROJECT_PATH
