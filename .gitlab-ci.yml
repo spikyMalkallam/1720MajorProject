@@ -27,7 +27,7 @@ nametag:
   stage: test
   allow_failure: true
   script:
-    - python /validate.py exists nametag.png
+    - python /validate.py exists thumbnail.png
 
 # check that you've filled out your statement of originality
 statement-of-originality:
