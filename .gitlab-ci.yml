@@ -21,7 +21,7 @@ page-deploy:
     - echo $COMP1720_TEST_URL
 
 # have you committed & pushed your nametag.png file
-nametag:
+thumbnail:
   tags:
     - comp1720
   stage: test
