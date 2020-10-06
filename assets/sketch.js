@@ -1,7 +1,3 @@
-function preload() {
-  // load any assets (images, sounds, etc.) here
-}
-
 function setup() {
   // add your setup code here
 }
