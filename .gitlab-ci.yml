@@ -11,7 +11,7 @@ page-deploy:
     - comp1720
   stage: deploy
   only:
-    - master
+    - main
   script:
     - mkdir -p $DEST_DIR
     # copy the thumbnail.png file if it exists
