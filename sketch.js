@@ -1,13 +1,44 @@
+function arrayRemove(arr, value) { 
+    
+  return arr.filter(function(ele){ 
+      return ele != value; 
+  });
+}
+
 function preload() {
   // load any assets (images, sounds, etc.) here
 }
 
+cellestialBodies = [];
+
+class cellestialBody {
+  constructor(x,y,mass,diameter) {
+    //Position of body
+    this.x = x;
+    this.y = y;
+    //Weight of the body
+    this.mass = mass;
+    //Diameter of the body
+    this.diameter = diameter;
+    //Density of the body
+    this.density = mass/((4/3)*PI*((diameter/2)^3));
+  }
+}
+
+function getForces(body) {
+  for (i = 0; i < cellestialBodies.length; i++) {
+    
+  }
+}
+
 function setup() {
-  // add your setup code here
+  background("black");
 }
 
 function draw() {
-  // add your draw code here
+  for (i = 0; i < cellestialBodies.length; i++) {
+
+  }
 }
 
 // when you hit the spacebar, what's currently on the canvas will be saved (as
