@@ -83,6 +83,7 @@ function getForces(body) {
     //console.log(body.pos.x/3);
   }
   text("Gravitation pull on moon: "+gravity+"N", earth.pos.x, earth.pos.y+100);
+  text("Angle of moon to earth: "+angle, earth.pos.x, earth.pos.y+120);
   body.velocityVector.x += body.accelerationVector.x*100;
   body.velocityVector.y += body.accelerationVector.y*100;
 }
@@ -134,12 +135,13 @@ function draw() {
   text("Moon y velocity: "+moon.velocityVector.y, 400, 450);
   text("Moon x acceleration: "+moon.accelerationVector.x, 400, 420);
   text("Moon y acceleration: "+moon.accelerationVector.y, 400, 470);
-  line(moon.pos.x, moon.pos.y)
-  //text("Moon gravity: "+moon.accelerationVector.y, earth.pos.x, earth.pos.y+120);
+  //Velocity Vector of the moon
+  line(moon.pos.x, moon.pos.y,moon.pos.x+moon.velocityVector.x,moon.pos.y+moon.velocityVector.y)
+  
   //text("Moon gravity: "+moon.accelerationVector.y, earth.pos.x, earth.pos.y+140);
   //text("Moon gravity: "+moon.accelerationVector.y, earth.pos.x, earth.pos.y+160);
   line(moon.pos.x, moon.pos.y, earth.pos.x, earth.pos.y);
-  trajectories.push(moon.pos.x, moon.pos.y, 10);
+  trajectories.push(moon.pos.x, moon.pos.y, 10); 
   for (i = 0; i < trajectories.length; i += 3) {
     fill("orange");
     ellipse(trajectories[i], trajectories[i+1], trajectories[i+2]);
