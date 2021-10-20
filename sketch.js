@@ -66,7 +66,11 @@ function getForces(body) {
     angleMode(DEGREES);
     seperation = (dist(body.pos.x, body.pos.y, bodyArray.pos.x, bodyArray.pos.y));
     gravity = (((6.67 * 10)**-11) * body.mass * bodyArray.mass)/seperation**2;
+    
+    det = createVector(body.pos.x, body.pos.y)
+
     angle = angleBetween(createVector(body.pos.x, body.pos.y),createVector(bodyArray.pos.x, bodyArray.pos.y));
+
     seperationV = createVector((Math.sin(angle)*seperation), (Math.cos(angle)*seperation))
     body.forceVector = createVector(0,0);
     body.forceVector.x += Math.cos(angle*(Math.PI/180))*gravity;
