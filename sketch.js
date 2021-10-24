@@ -132,7 +132,7 @@ function mouseDragged() {
 
 function drawBodies() {
   for (let body of cellestialBodies) {
-    ellipse(body.pos.x-camera.xOffset, body.pos.y-camera.yOffset, (body.diameter/1000)*sf);
+    ellipse((body.pos.x-camera.xOffset)*sf, (body.pos.y-camera.yOffset)*sf, (body.diameter/1000)*sf);
   }
 }
 
