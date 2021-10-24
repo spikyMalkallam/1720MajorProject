@@ -55,8 +55,21 @@ function setVelocity(body, x, y) {
 }
 
 function angleBetween(point1, point2) {
-  return degrees(Math.atan((point2.y-point1.y)/(point2.x-point1.x)));
+  console.log(Math.atan((point2.y-point1.y)/(point2.x-point1.x))*180/Math.PI);
+  return (Math.atan((point2.y-point1.y)/(point2.x-point1.x)))*180/Math.PI;
 }
+
+//function angleBetween(point1, point2) {
+  //angle = atan2(point1.y, point1.x) - atan2(point2.y, point2.x);
+  //angle = angle * 360 / (2*PI);
+
+   //if(angle < 0) {
+      //angle += 360;
+   //}
+  //console.log(angle);
+  //return degrees(angle);
+//}
+
 function getForces(body) {
   body.accelerationVector = createVector(0,0);  
   for (let bodyArray of cellestialBodies) {
@@ -66,8 +79,6 @@ function getForces(body) {
     angleMode(DEGREES);
     seperation = (dist(body.pos.x, body.pos.y, bodyArray.pos.x, bodyArray.pos.y));
     gravity = (((6.67 * 10)**-11) * body.mass * bodyArray.mass)/seperation**2;
-    
-    det = createVector(body.pos.x, body.pos.y)
 
     angle = angleBetween(createVector(body.pos.x, body.pos.y),createVector(bodyArray.pos.x, bodyArray.pos.y));
 
@@ -75,6 +86,7 @@ function getForces(body) {
     body.forceVector = createVector(0,0);
     body.forceVector.x += Math.cos(angle*(Math.PI/180))*gravity;
     body.forceVector.y += Math.sin(angle*(Math.PI/180))*gravity;
+    text("Moon angle: "+angle, earth.pos.x, earth.pos.y+160);
     //console.log(body.forceVector.x);
     //console.log(body.forceVector.y);
     //console.log(seperation);
@@ -82,14 +94,12 @@ function getForces(body) {
     //********************CHANGE BACK TO 30 FOR REAL TIME***************************                                                
     body.accelerationVector.x += (body.forceVector.x/body.mass)*-1;
     body.accelerationVector.y += (body.forceVector.y/body.mass)*-1;
-    console.log(body.name+body.forceVector.x);
     //
     //console.log(body.pos.x/3);
   }
   text("Gravitation pull on moon: "+gravity+"N", earth.pos.x, earth.pos.y+100);
-  text("Angle of moon to earth: "+angle, earth.pos.x, earth.pos.y+120);
-  body.velocityVector.x += body.accelerationVector.x*100;
-  body.velocityVector.y += body.accelerationVector.y*100;
+  body.velocityVector.x -= body.accelerationVector.x*100;
+  body.velocityVector.y -= body.accelerationVector.y*100;
 }
 
 function updatePositions() {
@@ -115,13 +125,13 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(60);
 
-  moon = new cellestialBody("Moon", 892,116,(7.35*10**22),17370);
+  moon = new cellestialBody("Moon", 892,216,(7.35*10**22),17370);
   cellestialBodies.push(moon);
   setAcceleration(moon, 0, 0);
   earth = new cellestialBody("Earth", 892,500,(6*10**24),63710);
   cellestialBodies.push(earth);
   
-  setVelocity(moon, 35230,0);
+  setVelocity(moon,0,0);
 }
 
 function draw() {
@@ -147,7 +157,6 @@ function draw() {
   line(moon.pos.x, moon.pos.y, earth.pos.x, earth.pos.y);
   trajectories.push(moon.pos.x, moon.pos.y, 10); 
   for (i = 0; i < trajectories.length; i += 3) {
-    fill("orange");
     ellipse(trajectories[i], trajectories[i+1], trajectories[i+2]);
   }
 }
