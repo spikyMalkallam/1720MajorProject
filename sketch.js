@@ -21,15 +21,16 @@ window.addEventListener("wheel", function(e) {
 let gravity = 0;
 let angle = 0;
 let seperation = 0;
-let sf = 1;
+let sf = 0.0032111853208671277;
 let locked = false;
 
 let cellestialBodies = [];
 let trajectories = [];
 
+
 let camera = {
-  xOffset: 500,
-  yOffset: 500,
+  xOffset: -966,
+  yOffset: -473,
   zoom: 0
 }
 
@@ -94,7 +95,7 @@ function getForces(body) {
     }
     angleMode(DEGREES);
     seperation = (dist(body.pos.x, body.pos.y, bodyArray.pos.x, bodyArray.pos.y));
-    gravity = ((((6.67 * 10)**-11) * body.mass * bodyArray.mass)/seperation**2)**1.1;
+    gravity = ((((6.67 * 10)**-11) * body.mass * bodyArray.mass)/seperation**2)**1; //Adjust gravity strength
     angle = angleBetween(createVector(body.pos.x, body.pos.y),createVector(bodyArray.pos.x, bodyArray.pos.y));
     seperationV = createVector((Math.sin(angle)*seperation), (Math.cos(angle)*seperation))
     body.forceVector = createVector(0,0);
@@ -107,9 +108,8 @@ function getForces(body) {
 
 
   }
-  text(angle, earth.pos.x, earth.pos.y+120);
-  body.velocityVector.x += body.accelerationVector.x*100;
-  body.velocityVector.y += body.accelerationVector.y*100;
+  body.velocityVector.x += body.accelerationVector.x*400;
+  body.velocityVector.y += body.accelerationVector.y*400;
 }
 
 function updatePositions() {
@@ -138,7 +138,59 @@ function mouseDragged() {
 
 function drawBodies() {
   for (let body of cellestialBodies) {
-    ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset, (body.diameter/100)*sf);
+    if (body == mars) {
+      stroke(255, 133, 96);
+      fill(255, 133, 96);
+    }
+    if (body == sun) {
+      noFill();
+      stroke("white");
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(27938*2)*sf);
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(38938*2)*sf);
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(58430*2)*sf);
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(76030*2)*sf);
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(86680*2)*sf);
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(99430*2)*sf);
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(109430*2)*sf);
+      ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,(129430*2)*sf);
+      stroke("orange");
+      fill("yellow");
+    }
+    if (body == earth) {
+      stroke("green");
+      fill("green");
+    }
+    //if (body == moon) {
+      //stroke("grey");
+     // fill("grey");
+    //}
+    if (body == mercury) {
+      stroke(144, 138, 140);
+      fill(144, 138, 140);
+    }
+    if (body == venus) {
+      stroke(238, 229, 220);
+      fill(238, 229, 220);
+    }
+    if (body == jupiter) {
+      stroke(185, 147, 85);
+      fill(185, 147, 85);
+    }
+    if (body == saturn) {
+      stroke(202, 162, 110);
+      fill(202, 162, 110);
+    }
+    if (body == uranus) {
+      stroke(138, 157, 168);
+      fill(138, 157, 168);
+    }
+    if (body == neptune) {
+      stroke(95, 115, 159);
+      fill(95, 115, 159);
+    }
+    //Velocity Vector
+    //line((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,((body.pos.x*sf)-camera.xOffset)+body.velocityVector.x, ((body.pos.y*sf)-camera.yOffset)+body.velocityVector.y)
+    ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset, (body.diameter/30)*sf);
   }
 }
 
@@ -152,27 +204,48 @@ function setup() {
   
   sun = new cellestialBody("Sun", 1000, 0,(1.989*10**30),696340);
   cellestialBodies.push(sun);
-  moon = new cellestialBody("Moon", 1000,150064,(7.35*10**22),17370);
-  cellestialBodies.push(moon);
-  setAcceleration(moon, 0, 0);
-  earth = new cellestialBody("Earth", 1000,148680,(6*10**24),63710);
+
+  mercury = new cellestialBody("Mercury", 1000, 27938, (3.285*10**23),48790);
+  cellestialBodies.push(mercury);
+
+  venus = new cellestialBody("Venus", 1000,38938,(4.867*10**24),32104);
+  cellestialBodies.push(venus);
+
+  earth = new cellestialBody("Earth", 1000,58430,(6*10**24),73710);
   cellestialBodies.push(earth);
-  mars = new cellestialBody("Mars", 1000,227900,(6.39*10**23),6779);
+
+  //moon = new cellestialBody("Moon", 1000,108064,(7.35*10**22),17370);
+  //cellestialBodies.push(moon);
+
+  mars = new cellestialBody("Mars", 1000,76030,(6.39*10**23),67790);
   cellestialBodies.push(mars);
 
-  setVelocity(earth, -800000,0);
-  setVelocity(moon, -800000,0);
-  setVelocity(mars, -800000,0);
+  jupiter = new cellestialBody("Jupiter", 1000,86680,(1.898**10*27),139820);
+  cellestialBodies.push(jupiter);
+
+  saturn = new cellestialBody("Saturn", 1000,99430,(5.683*10**26),116460);
+  cellestialBodies.push(saturn);
+
+  uranus = new cellestialBody("Uranus", 1000,109430,(8.681*10**25),50724);
+  cellestialBodies.push(uranus);
+
+  neptune = new cellestialBody("Neptune", 1000,129430,(1.024*10**26),49244);
+  cellestialBodies.push(neptune);
+
+  //Putting each planet into Orbit
+  setVelocity(mercury, -4950000,0);
+  setVelocity(venus, -4200000,0);
+  setVelocity(earth, -3425000.2222 ,0);
+  //setVelocity(moon, -2227220.2222,0);
+  setVelocity(mars, -3000000,0);
+  setVelocity(jupiter, -2830000,0);
+  setVelocity(saturn, -2630000,0);
+  setVelocity(uranus, -2500000,0);
+  setVelocity(neptune, -2299000,0);
 }
 
 function draw() {
   background("black");
-  fill("black");
-  stroke("white");
-  color("white");
-
-  color("white");
-  fill("white");
   drawBodies();
   updatePositions();
   if (locked) {
@@ -180,8 +253,7 @@ function draw() {
     camera.yOffset = getPosY(earth)*sf - height/2;
     sf = 0.12116306925716806;
   }
-  //console.log(camera.xOffset+", "+camera.yOffset);
-  //console.log(getPosX(earth)+", "+getPosY(earth));
+  console.log(camera.xOffset+", "+camera.yOffset);
   console.log(sf);
 }
 
