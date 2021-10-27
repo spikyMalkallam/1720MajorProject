@@ -7,9 +7,9 @@ function arrayRemove(arr, value) {
 
 window.addEventListener("wheel", function(e) {
   if (e.deltaY > 0)
-    sf *= 1.05;
-  else
     sf *= 0.95;
+  else
+    sf *= 1.05;
 });
 
 //One pixel = 1000km
@@ -22,13 +22,14 @@ let gravity = 0;
 let angle = 0;
 let seperation = 0;
 let sf = 1;
+let locked = false;
 
 let cellestialBodies = [];
 let trajectories = [];
 
 let camera = {
-  xOffset: 0,
-  yOffset: 0,
+  xOffset: 500,
+  yOffset: 500,
   zoom: 0
 }
 
@@ -68,6 +69,14 @@ function setVelocity(body, x, y) {
   body.velocityVector.y = y;
 }
 
+function getPosX(body) {
+  return body.pos.x;
+}
+
+function getPosY(body) {
+  return body.pos.y;
+}
+
 let equalise1 = 0;
 let equalise2 = 1;
 function angleBetween(point1, point2) {
@@ -85,24 +94,19 @@ function getForces(body) {
     }
     angleMode(DEGREES);
     seperation = (dist(body.pos.x, body.pos.y, bodyArray.pos.x, bodyArray.pos.y));
-    gravity = (((6.67 * 10)**-11) * body.mass * bodyArray.mass)/seperation**2;
+    gravity = ((((6.67 * 10)**-11) * body.mass * bodyArray.mass)/seperation**2)**1.1;
     angle = angleBetween(createVector(body.pos.x, body.pos.y),createVector(bodyArray.pos.x, bodyArray.pos.y));
     seperationV = createVector((Math.sin(angle)*seperation), (Math.cos(angle)*seperation))
     body.forceVector = createVector(0,0);
     body.forceVector.x += Math.cos(angle*(Math.PI/180))*gravity;
     body.forceVector.y += Math.sin(angle*(Math.PI/180))*gravity;
-    //console.log(body.forceVector.x);
-    //console.log(body.forceVector.y);
-    //console.log(seperation);
     //Converting to force velcity, divided by thirty to adjust from m/s to m/(s/30) 
     //********************CHANGE BACK TO 30 FOR REAL TIME***************************                                                
     body.accelerationVector.x += (body.forceVector.x/body.mass)*-1;
     body.accelerationVector.y += (body.forceVector.y/body.mass)*-1;
 
-    //
-    //console.log(body.pos.x/3);
+
   }
-  //text("Gravitation pull on moon: "+gravity+"N", earth.pos.x, earth.pos.y+100);
   text(angle, earth.pos.x, earth.pos.y+120);
   body.velocityVector.x += body.accelerationVector.x*100;
   body.velocityVector.y += body.accelerationVector.y*100;
@@ -123,16 +127,18 @@ let mousePosY = 0;
 function mousePressed() {
   mousePosX = mouseX;
   mousePosY = mouseY;
+  mouseOffX = camera.xOffset;
+  mouseOffy = camera.yOffset;
 }
 
 function mouseDragged() {
-  camera.xOffset = mouseX-mousePosX;
-  camera.yOffset = mouseY-mousePosY;
+  camera.xOffset = ((mouseX)-mousePosX)*-1+mouseOffX;
+  camera.yOffset = ((mouseY)-mousePosY)*-1+mouseOffy;
 }
 
 function drawBodies() {
   for (let body of cellestialBodies) {
-    ellipse((body.pos.x-camera.xOffset)*sf, (body.pos.y-camera.yOffset)*sf, (body.diameter/1000)*sf);
+    ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset, (body.diameter/100)*sf);
   }
 }
 
@@ -143,44 +149,40 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(60);
-
-  moon = new cellestialBody("Moon", 892,116,(7.35*10**22),17370);
+  
+  sun = new cellestialBody("Sun", 1000, 0,(1.989*10**30),696340);
+  cellestialBodies.push(sun);
+  moon = new cellestialBody("Moon", 1000,150064,(7.35*10**22),17370);
   cellestialBodies.push(moon);
   setAcceleration(moon, 0, 0);
-  earth = new cellestialBody("Earth", 892,500,(6*10**24),63710);
+  earth = new cellestialBody("Earth", 1000,148680,(6*10**24),63710);
   cellestialBodies.push(earth);
-  
-  setVelocity(moon, 35230,0);
+  mars = new cellestialBody("Mars", 1000,227900,(6.39*10**23),6779);
+  cellestialBodies.push(mars);
+
+  setVelocity(earth, -800000,0);
+  setVelocity(moon, -800000,0);
+  setVelocity(mars, -800000,0);
 }
 
 function draw() {
   background("black");
-  //noFill();
   fill("black");
   stroke("white");
   color("white");
-  ellipse(earth.pos.x, earth.pos.y, 384*2);
+
   color("white");
   fill("white");
   drawBodies();
   updatePositions();
-  console.log(camera.xOffset);
-  console.log(camera.yOffset);
-  //text("Moon x velocity: "+moon.velocityVector.x, 400, 400);
-  //text("Moon y velocity: "+moon.velocityVector.y, 400, 450);
-  //text("Moon x acceleration: "+moon.accelerationVector.x, 400, 420);
-  //text("Moon y acceleration: "+moon.accelerationVector.y, 400, 470);
-  //Velocity Vector of the moon
-  line(moon.pos.x, moon.pos.y,moon.pos.x+moon.velocityVector.x,moon.pos.y+moon.velocityVector.y);
-  
-  //text("Moon gravity: "+moon.accelerationVector.y, earth.pos.x, earth.pos.y+140);
-  //text("Moon gravity: "+moon.accelerationVector.y, earth.pos.x, earth.pos.y+160);
-  line(moon.pos.x, moon.pos.y, earth.pos.x, earth.pos.y);
-  trajectories.push(moon.pos.x, moon.pos.y, 10); 
-  //for (i = 0; i < trajectories.length; i += 3) {
-    //fill("orange");
-    //ellipse(trajectories[i], trajectories[i+1], trajectories[i+2]);
-  //}
+  if (locked) {
+    camera.xOffset = getPosX(earth)*sf - width/2;
+    camera.yOffset = getPosY(earth)*sf - height/2;
+    sf = 0.12116306925716806;
+  }
+  //console.log(camera.xOffset+", "+camera.yOffset);
+  //console.log(getPosX(earth)+", "+getPosY(earth));
+  console.log(sf);
 }
 
 ///function mouseDragged() {
@@ -198,5 +200,8 @@ function draw() {
 function keyTyped() {
   if (key === " ") {
     saveCanvas("thumbnail.png");
+  }
+  if (key === "l") {
+    locked = !locked;
   }
 }
