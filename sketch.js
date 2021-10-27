@@ -149,16 +149,12 @@ function collisionDetection() {
       if (body == body2) {
         continue;
       }
-      if (dist(body.pos.x,body.pos.y,body2.pos.x,body2.pos.y) <= ((body.diameter/30))+((body2.diameter/30))) {
+      if (dist(body.pos.x,body.pos.y,body2.pos.x,body2.pos.y) <= ((body.diameter/30)/2)+((body2.diameter/30)/2)) {
         console.log("We got a hit between " +body.name+" and "+body2.name);
         resultantMomentumX = (body.velocityVector.x*body.mass) + (body2.velocityVector.x*body2.mass);
         resultantMomentumY = (body.velocityVector.y*body.mass) + (body2.velocityVector.y*body2.mass);
-        console.log(resultantMomentumX);
-        console.log(resultantMomentumY);
-        body.velocityVector.x = resultantMomentumX/body.mass;
-        body.velocityVector.y = resultantMomentumY/body.mass;
-        body2.velocityVector.x = resultantMomentumX/body2.mass;
-        body2.velocityVector.y = resultantMomentumY/body2.mass;
+        body2.velocityVector.x += resultantMomentumX/body2.mass;
+        body2.velocityVector.y += resultantMomentumY/body2.mass;
       }
     }
   }
@@ -277,7 +273,7 @@ function setup() {
   setVelocity(saturn, -2630000,0);
   setVelocity(uranus, -2500000,0);
   setVelocity(neptune, -2299000,0);
-  setVelocity(whiteBall, 2299000,0);
+  setVelocity(whiteBall, 2599000,0);
 }
 
 function draw() {
