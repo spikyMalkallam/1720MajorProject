@@ -22,7 +22,7 @@ let gravity = 0;
 let angle = 0;
 let seperation = 0;
 let sf = 0.0032111853208671277;
-let locked = false;
+let launched = false;
 
 let cellestialBodies = [];
 let trajectories = [];
@@ -134,6 +134,34 @@ function mousePressed() {
 function mouseDragged() {
   camera.xOffset = ((mouseX)-mousePosX)*-1+mouseOffX;
   camera.yOffset = ((mouseY)-mousePosY)*-1+mouseOffy;
+  //if (launched) {
+    //launchVector.x = mousePosX - mouseX;
+   //launchVector.y = mousePosY - mouseY;
+  //}
+}
+
+let resultantMomentumX;
+let resultantMomentumY;
+
+function collisionDetection() {
+  for (let body of cellestialBodies) {
+    for (let body2 of cellestialBodies) {
+      if (body == body2) {
+        continue;
+      }
+      if (dist(body.pos.x,body.pos.y,body2.pos.x,body2.pos.y) <= ((body.diameter/30))+((body2.diameter/30))) {
+        console.log("We got a hit between " +body.name+" and "+body2.name);
+        resultantMomentumX = (body.velocityVector.x*body.mass) + (body2.velocityVector.x*body2.mass);
+        resultantMomentumY = (body.velocityVector.y*body.mass) + (body2.velocityVector.y*body2.mass);
+        console.log(resultantMomentumX);
+        console.log(resultantMomentumY);
+        body.velocityVector.x = resultantMomentumX/body.mass;
+        body.velocityVector.y = resultantMomentumY/body.mass;
+        body2.velocityVector.x = resultantMomentumX/body2.mass;
+        body2.velocityVector.y = resultantMomentumY/body2.mass;
+      }
+    }
+  }
 }
 
 function drawBodies() {
@@ -188,6 +216,10 @@ function drawBodies() {
       stroke(95, 115, 159);
       fill(95, 115, 159);
     }
+    if (body == whiteBall) {
+      stroke("white");
+      fill("white");
+    }
     //Velocity Vector
     //line((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset,((body.pos.x*sf)-camera.xOffset)+body.velocityVector.x, ((body.pos.y*sf)-camera.yOffset)+body.velocityVector.y)
     ellipse((body.pos.x*sf)-camera.xOffset, (body.pos.y*sf)-camera.yOffset, (body.diameter/30)*sf);
@@ -213,6 +245,9 @@ function setup() {
 
   earth = new cellestialBody("Earth", 1000,58430,(6*10**24),73710);
   cellestialBodies.push(earth);
+
+  whiteBall = new cellestialBody("Ball", -10000,58430,(9*10**24),73710);
+  cellestialBodies.push(whiteBall);
 
   //moon = new cellestialBody("Moon", 1000,108064,(7.35*10**22),17370);
   //cellestialBodies.push(moon);
@@ -242,19 +277,16 @@ function setup() {
   setVelocity(saturn, -2630000,0);
   setVelocity(uranus, -2500000,0);
   setVelocity(neptune, -2299000,0);
+  setVelocity(whiteBall, 2299000,0);
 }
 
 function draw() {
   background("black");
   drawBodies();
   updatePositions();
-  if (locked) {
-    camera.xOffset = getPosX(earth)*sf - width/2;
-    camera.yOffset = getPosY(earth)*sf - height/2;
-    sf = 0.12116306925716806;
-  }
-  console.log(camera.xOffset+", "+camera.yOffset);
-  console.log(sf);
+  collisionDetection();
+  //console.log(camera.xOffset+", "+camera.yOffset);
+  //console.log(sf);
 }
 
 ///function mouseDragged() {
@@ -273,7 +305,7 @@ function keyTyped() {
   if (key === " ") {
     saveCanvas("thumbnail.png");
   }
-  if (key === "l") {
-    locked = !locked;
-  }
+  //if (key == 'l') {
+    //launched = !launched;
+  //}
 }
