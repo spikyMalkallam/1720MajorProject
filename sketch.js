@@ -1,9 +1,4 @@
-function arrayRemove(arr, value) { 
-    
-  return arr.filter(function(ele){ 
-      return ele != value; 
-  });
-}
+
 
 window.addEventListener("wheel", function(e) {
   if (e.deltaY > 0)
@@ -35,7 +30,7 @@ let camera = {
 }
 
 class cellestialBody {
-  constructor(name,x,y,mass,diameter) {
+  constructor(name,x,y,mass,diameter,type) {
     //Name of the body
     this.name = name;
     //Position of body
@@ -52,6 +47,8 @@ class cellestialBody {
     this.accelerationVector = createVector(0, 0);
     //Velocity of object
     this.velocityVector = createVector(0, 0);
+    //
+    this.type = type;
   }
 }
 
@@ -140,8 +137,10 @@ function mouseDragged() {
   //}
 }
 
-let resultantMomentumX;
-let resultantMomentumY;
+let bodyMomentumX;
+let bodyMomentumY;
+let removeBodies = []
+let cheese = [];
 
 function collisionDetection() {
   for (let body of cellestialBodies) {
@@ -150,14 +149,32 @@ function collisionDetection() {
         continue;
       }
       if (dist(body.pos.x,body.pos.y,body2.pos.x,body2.pos.y) <= ((body.diameter/30)/2)+((body2.diameter/30)/2)) {
-        console.log("We got a hit between " +body.name+" and "+body2.name);
-        resultantMomentumX = (body.velocityVector.x*body.mass) + (body2.velocityVector.x*body2.mass);
-        resultantMomentumY = (body.velocityVector.y*body.mass) + (body2.velocityVector.y*body2.mass);
-        body2.velocityVector.x += resultantMomentumX/body2.mass;
-        body2.velocityVector.y += resultantMomentumY/body2.mass;
+        if (body.type == "star") {
+          removeBodies.push(body2)
+        }
+        //console.log("We got a hit between " +body.name+" and "+body2.name);
+        //console.log(body.name+": x momentum: "+(body.velocityVector.x*body.mass)/body2.mass+" y momentum: "+(body.velocityVector.y*body.mass)/body2.mass);
+        //console.log(body2.name+": x momentum: "+body2.velocityVector.x*body2.mass+" y momentum: "+body2.velocityVector.y*body2.mass);
+        bodyMomentumX = (body.velocityVector.x*body.mass);
+        bodyMomentumY = (body.velocityVector.y*body.mass);
+        body2.velocityVector.x = (bodyMomentumX)/body2.mass;
+        body2.velocityVector.y = (bodyMomentumY)/body2.mass;
       }
     }
   }
+  for (let bod of removeBodies) {
+    cellestialBodies = (removeVal(cellestialBodies, bod));
+  }
+}
+
+function removeVal(arr, value) {
+  let arr2 = [];
+  for (let value2 of arr) {
+    if (value2 != value) {
+      arr2.push(value2);
+    }
+  }
+  return arr2;
 }
 
 function drawBodies() {
@@ -212,7 +229,7 @@ function drawBodies() {
       stroke(95, 115, 159);
       fill(95, 115, 159);
     }
-    if (body == whiteBall) {
+    if (body == ball) {
       stroke("white");
       fill("white");
     }
@@ -230,41 +247,41 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   frameRate(60);
   
-  sun = new cellestialBody("Sun", 1000, 0,(1.989*10**30),696340);
+  sun = new cellestialBody("Sun", 1000, 0,(1.989*10**30),696340,"star");
   cellestialBodies.push(sun);
 
-  mercury = new cellestialBody("Mercury", 1000, 27938, (3.285*10**23),48790);
+  mercury = new cellestialBody("Mercury", 1000, 27938, (3.285*10**23),48790,"planet");
   cellestialBodies.push(mercury);
 
-  venus = new cellestialBody("Venus", 1000,38938,(4.867*10**24),32104);
+  venus = new cellestialBody("Venus", 1000,38938,(4.867*10**24),32104,"planet");
   cellestialBodies.push(venus);
 
-  earth = new cellestialBody("Earth", 1000,58430,(6*10**24),73710);
+  earth = new cellestialBody("Earth", 1000,58430,(6*10**24),73710,"planet");
   cellestialBodies.push(earth);
 
-  whiteBall = new cellestialBody("Ball", -10000,58430,(9*10**24),73710);
-  cellestialBodies.push(whiteBall);
+  ball = new cellestialBody("Ball", -10000,58430,(9*10**24),73710,"planet");
+  cellestialBodies.push(ball);
 
   //moon = new cellestialBody("Moon", 1000,108064,(7.35*10**22),17370);
   //cellestialBodies.push(moon);
 
-  mars = new cellestialBody("Mars", 1000,76030,(6.39*10**23),67790);
+  mars = new cellestialBody("Mars", 1000,76030,(6.39*10**23),67790,"planet");
   cellestialBodies.push(mars);
 
-  jupiter = new cellestialBody("Jupiter", 1000,86680,(1.898**10*27),139820);
+  jupiter = new cellestialBody("Jupiter", 1000,86680,(1.898**10*27),139820,"planet");
   cellestialBodies.push(jupiter);
 
-  saturn = new cellestialBody("Saturn", 1000,99430,(5.683*10**26),116460);
+  saturn = new cellestialBody("Saturn", 1000,99430,(5.683*10**26),116460,"planet");
   cellestialBodies.push(saturn);
 
-  uranus = new cellestialBody("Uranus", 1000,109430,(8.681*10**25),50724);
+  uranus = new cellestialBody("Uranus", 1000,109430,(8.681*10**25),50724,"planet");
   cellestialBodies.push(uranus);
 
-  neptune = new cellestialBody("Neptune", 1000,129430,(1.024*10**26),49244);
+  neptune = new cellestialBody("Neptune", 1000,129430,(1.024*10**26),49244,"planet");
   cellestialBodies.push(neptune);
 
   //Putting each planet into Orbit
-  setVelocity(mercury, -4950000,0);
+  //setVelocity(mercury, -4950000,0);
   setVelocity(venus, -4200000,0);
   setVelocity(earth, -3425000.2222 ,0);
   //setVelocity(moon, -2227220.2222,0);
@@ -273,7 +290,7 @@ function setup() {
   setVelocity(saturn, -2630000,0);
   setVelocity(uranus, -2500000,0);
   setVelocity(neptune, -2299000,0);
-  setVelocity(whiteBall, 2599000,0);
+  setVelocity(ball, 3425000.2222,0);
 }
 
 function draw() {
