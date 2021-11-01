@@ -546,7 +546,7 @@ function soundWarp() {
   }
   overalGrav = 2.418630304850073*10**28/overalGrav;
   overalGrav = map(overalGrav, 0, 1000, 0, 0.3);
-  let volumeWarp = 1.5-overalGrav*10;
+  let volumeWarp = 1.8-overalGrav*10;
   let pitchWarp = map(overalGrav, 0, 1200, 0, 0.3);
   if (volumeWarp < 0) {
     volumeWarp = 0;
