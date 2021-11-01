@@ -130,7 +130,7 @@ function drawTail() {
 }
 
 function clicked(button) {
-  console.log(width/mouseX+", "+height/mouseY);
+  //console.log(width/mouseX+", "+height/mouseY);
   if (mouseX > button.x && mouseX < button.x + button.size && mouseY < button.y+button.size && mouseY > button.y) {
     button.pressed = !button.pressed;
     if (button.pressed) {
@@ -243,7 +243,18 @@ let planetSelected = null;
 
 let selected = false;
 
+let plutoPlaced = false;
+
+let mousePosXL = 0;
+let mousePosYL = 0;
+let launchSpeedX = 0;
+let launchSpeedY = 0;
+
 function mousePressed() {
+  mousePosXL = mouseX;
+  mousePosYL = mouseY;
+  launchSpeedX = 0;
+  launchSpeedY = 0;
   //Button Detection
   if(mouseX > (width/1.067853170189099+width/30)-width/26/2 && mouseX < (width/1.067853170189099+width/30)+width/26/2 &&
     mouseY < (height/10+height/15)+width/26/2 && mouseY > (height/10+height/15)-width/26/2) 
@@ -282,7 +293,7 @@ function mousePressed() {
   for (let body of cellestialBodies) {
     if (mouseX > (((body.pos.x*sf)-camera.xOffset)-(body.diameter/30/2)*sf) && mouseX < (((body.pos.x*sf)-camera.xOffset)+(body.diameter/30/2)*sf) &&
         mouseY < (((body.pos.y*sf)-camera.yOffset)+(body.diameter/30/2)*sf) && mouseY > (((body.pos.y*sf)-camera.yOffset)-(body.diameter/30/2)*sf)) {
-          if (button1Pressed || button2Pressed) {
+          if (button1Pressed || button2Pressed || button3Pressed) {
           planetSelected = body;
           }
         } 
@@ -294,6 +305,9 @@ function mousePressed() {
         bu.pressed = false;
         bu.colour = [77, 78, 80];
         selected = false;
+        if (bu.planet == pluto) {
+          plutoPlaced = true;
+        }
         createNewBody(bu.planet);
       }
     }
@@ -303,16 +317,31 @@ function mousePressed() {
   mousePosY = mouseY;
   mouseOffX = camera.xOffset;
   mouseOffy = camera.yOffset;
-  console.log(width/mouseX+", "+height/mouseY);
+  //console.log(width/mouseX+", "+height/mouseY);
 }
 
+let firedB = false;
+let launching = false;
+
 function mouseReleased() {
-  planetSelected = null;
+  if (button3Pressed) {
+    launchSpeedX = ((mouseX)-mousePosXL)*-10000;
+    launchSpeedY = ((mouseY)-mousePosYL)*-10000;
+    console.log(launchSpeedX);
+    console.log(launchSpeedY);
+    planetSelected.velocityVector.x += launchSpeedX;
+    planetSelected.velocityVector.y += launchSpeedY;
+  }
+  if (button3Pressed) {
+    firedB = true;
+  }
 }
 
 function mouseDragged() {
+  if (!button3Pressed) {
   camera.xOffset = ((mouseX)-mousePosX)*-1+mouseOffX;
   camera.yOffset = ((mouseY)-mousePosY)*-1+mouseOffy;
+  }
   //if (launched) {
     //launchVector.x = mousePosX - mouseX;
    //launchVector.y = mousePosY - mouseY;
@@ -321,9 +350,9 @@ function mouseDragged() {
 
 function createNewBody(body) {
   spawnedBody = new cellestialBody("new"+body.name,(mouseX+camera.xOffset)/sf, (mouseY+camera.yOffset)/sf,body.mass,body.diameter,body.type,body.colour);
-  console.log(spawnedBody);
+  //console.log(spawnedBody);
   cellestialBodies.push(spawnedBody);
-  console.log(cellestialBodies);
+  //console.log(cellestialBodies);
 }
 
 let bodyMomentumX;
@@ -440,6 +469,15 @@ function userInterface() {
     fill("Black");
     textSize(width/120);
   }
+  if (button3Pressed) {
+    textSize(width/60);
+    stroke(129, 129, 129);
+    fill(129, 129, 129);
+    text("Click and drag away from a planet then release to fire it", width/2.5,height/1.05);
+    stroke("Black");
+    fill("Black");
+    textSize(width/120);
+  }
   text("Lighten", width/1.067853170189099+width/51,height/4+height/10.2);
   text("Launch", width/1.071+width/43,height/2+height/28);
   text("Insert", width/1.067853170189099+width/44,height/1.45+height/28);
@@ -515,13 +553,19 @@ function soundWarp() {
   if (pitchWarp < 0.076) {
     pitchWarp = 0.076;
   }
-  console.log(volumeWarp);
+  //console.log(volumeWarp);
   gravityHum.rate(pitchWarp);
   gravityHum.setVolume(volumeWarp);
 }
 
 function preload() {
   gravityHum = loadSound('assets/gravitynoise.mp3');
+  backgroundMusic = loadSound('assets/jellyfish-in-space-by-kevin-macleod-from-filmmusic-io.mp3');
+  first = loadSound('assets/Intro.mp3');
+  second = loadSound('assets/Second.mp3');
+  third = loadSound('assets/Third.mp3');
+  fourth = loadSound('assets/Fourth.mp3');
+  fifth = loadSound('assets/Fifth.mp3');
   gravityHum.setVolume(0.2);
 }
 
@@ -558,18 +602,18 @@ function setup() {
   neptune = new cellestialBody("Neptune", 1000,-129430,(1.024*10**26),49244,"planet",[95, 115, 159]);
   cellestialBodies.push(neptune);
 
-  pluto = new cellestialBody("Pluto", 1000, 15000,(1.30900*10**22),1,188.3,"planet",[117, 105, 89]);
+  pluto = new cellestialBody("Pluto", 1000, 15000,(1.30900*10**22),19188.3,"planet",[117, 105, 89]);
 
   //Putting each planet into Orbit
   setVelocity(mercury, -4950000,0);
-  console.log("Mercury: "+orbitSpeed(sun,mercury)+" Expected: -4950000");
+  //console.log("Mercury: "+orbitSpeed(sun,mercury)+" Expected: -4950000");
   setVelocity(venus, 4200000,0);
-  console.log("Earth: "+orbitSpeed(sun,earth)+" Expected: -3425000.2222");
+  //console.log("Earth: "+orbitSpeed(sun,earth)+" Expected: -3425000.2222");
   setVelocity(earth, -3425000.2222 ,0);
   setVelocity(moon, -3825000.2222,20000);
-  console.log("Mars: "+orbitSpeed(sun,mars)+" Expected: -3000000");
+  //console.log("Mars: "+orbitSpeed(sun,mars)+" Expected: -3000000");
   setVelocity(mars, 3000000,0);
-  console.log("Juipiter: "+orbitSpeed(sun,jupiter)+" Expected: -2830000");
+  //console.log("Juipiter: "+orbitSpeed(sun,jupiter)+" Expected: -2830000");
   setVelocity(jupiter, -2830000,0);
   setVelocity(saturn, 2630000,0);
   setVelocity(uranus, -2500000,0);
@@ -602,7 +646,28 @@ function setup() {
 
   //Sound
   gravityHum.loop();
+  backgroundMusic.loop();
+  backgroundMusic.setVolume(0.05);
+  first.play();
 }
+
+let part1 = true;
+let part2 = false;
+let part3 = false;
+let part4 = false;
+let part5 = false;
+let draggingB = true;
+let count = 0;
+let stopB = true;
+let notPlayed = true;
+let cheese = true;
+let cake = true;
+
+function lockCamera() {
+  camera.xOffset = (earth.pos.x*sf)-width/2;
+  camera.yOffset = (earth.pos.y*sf)-height/2;
+  sf = 0.03866514315355348;
+} 
 
 function draw() {
   background("black");
@@ -612,6 +677,7 @@ function draw() {
   userInterface();
   updatePositions();
   collisionDetection();
+  //console.log(camera.xOffset+", "+camera.yOffset);
   soundWarp();
   //Weighten
   if (button1Pressed) {
@@ -625,9 +691,63 @@ function draw() {
       changeMassNegative(planetSelected);
     }
   }
+  console.log(planetSelected);
+  //Structure
+  if (part1) {
+    lockCamera();
+  }
+  if (!first.isPlaying() && draggingB && stopB) {
+    part1 = false;
+    draggingB = false;
+  }
+  if (!first.isPlaying() && !draggingB) {
+    fill("White");
+    text("Click and drag to move and scroll wheel to zoom", width/2.5,height/1.2);
+  }
+  if (count > 1320) {
+    draggingB = true;
+    stopB = false;
+  }
+  if (sf <= 0.0052111853208671277 || count > 1320) {
+    part2 = true;
+  }
+  if (part2 && notPlayed) {
+    notPlayed = false;
+    second.setVolume(1.8);
+    second.play();
+  }
+  if (plutoPlaced && cheese) {
+    cheese = false; 
+    part2 = false;
+    notPlayed = true;
+    part3 = true;
+  }
+  if (part3 && notPlayed) {
+    fourth.play();
+    fourth.setVolume(1.8);
+    notPlayed = false;
+  }
+  if (!fourth.isPlaying() && part3) {
+    part4 = true;
+    part3 = false;
+    launching = true;
+  }
+  if (part4 && cake) {
+    fill("White");
+    text("Use the launch button to propel Pluto", width/2.5,height/1.2);
+  }
+  if (cake && firedB) {
+    fifth.setVolume(1.8);
+    fifth.play();
+    cake = false;
+  }
+  //console.log(count);
+
+
 
   //console.log(camera.xOffset+", "+camera.yOffset);
   //console.log(sf);
+  count++;
 }
 
 ///function mouseDragged() {
