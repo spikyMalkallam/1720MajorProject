@@ -335,6 +335,7 @@ function mouseReleased() {
   if (button3Pressed) {
     firedB = true;
   }
+  planetSelected = null;
 }
 
 function mouseDragged() {
@@ -677,6 +678,12 @@ function draw() {
   userInterface();
   updatePositions();
   collisionDetection();
+  if (button3Pressed) {
+    if (planetSelected != null) {
+      stroke("White");
+      line((planetSelected.pos.x*sf)-camera.xOffset,(planetSelected.pos.y*sf)-camera.yOffset,mouseX,mouseY);
+    }
+  }
   //console.log(camera.xOffset+", "+camera.yOffset);
   soundWarp();
   //Weighten
