@@ -325,8 +325,8 @@ let launching = false;
 
 function mouseReleased() {
   if (button3Pressed) {
-    launchSpeedX = ((mouseX)-mousePosXL)*-10000;
-    launchSpeedY = ((mouseY)-mousePosYL)*-10000;
+    launchSpeedX = ((mouseX)-mousePosXL)*-100000;
+    launchSpeedY = ((mouseY)-mousePosYL)*-100000;
     console.log(launchSpeedX);
     console.log(launchSpeedY);
     planetSelected.velocityVector.x += launchSpeedX;
