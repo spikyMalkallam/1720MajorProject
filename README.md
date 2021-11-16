@@ -1,4 +1,4 @@
-# my Space Major Project thing
+# My Space Major Project thing
 
 
 Planets and stuff
